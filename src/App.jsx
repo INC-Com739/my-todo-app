@@ -7,6 +7,7 @@ function App() {
   const [input, setInput] = useState('');
 
   useEffect(() => {
+    console.log('AWS Region:', import.meta.env.VITE_APP_AWS_REGION); // Verification: should log 'us-east-1'
     async function fetchTodos() {
       const items = await scanTodos();
       setTodos(items);
