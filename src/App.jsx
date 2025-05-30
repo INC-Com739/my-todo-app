@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { scanTodos, createTodo } from './dynamo';
+import { scanTodos, createTodo, updateTodo, deleteTodo } from './dynamo';
 import './App.css'
 
 function App() {
@@ -27,6 +27,19 @@ function App() {
     setInput('');
   };
 
+  const handleUpdate = async (id, currentCompleted) => {
+    const updated = todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !currentCompleted } : todo
+    );
+    setTodos(updated);
+    await updateTodo({ id, text: updated.find(t => t.id === id).text, completed: !currentCompleted });
+  };
+
+  const handleDelete = async (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+    await deleteTodo(id);
+  };
+
   return (
     <>
       <h1>Vite + React + Tailwind CSS</h1>
@@ -40,7 +53,15 @@ function App() {
       </div>
       <ul>
         {todos.map(todo => (
-          <li key={todo.id}>{todo.text}</li>
+          <li key={todo.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => handleUpdate(todo.id, todo.completed)}
+            />
+            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>{todo.text}</span>
+            <button onClick={() => handleDelete(todo.id)} style={{ color: 'red', marginLeft: 8 }}>×</button>
+          </li>
         ))}
       </ul>
     </>
